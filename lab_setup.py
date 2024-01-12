@@ -1,5 +1,5 @@
-from vectara.client.core import Factory
-from vectara.client.util import render_markdown
+from vectara_client.core import Factory
+from vectara_client.util import render_markdown
 from IPython.display import display, Markdown
 
 import logging

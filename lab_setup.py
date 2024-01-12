@@ -1,5 +1,5 @@
-from vectara.core import Factory
-from vectara.util import render_markdown
+from vectara.client.core import Factory
+from vectara.client.util import render_markdown
 from IPython.display import display, Markdown
 
 import logging
@@ -7,17 +7,22 @@ import os
 
 logging.basicConfig(format='%(asctime)s %(name)-20s %(levelname)s:%(message)s', level=logging.INFO, datefmt='%H:%M:%S %z')
 
-logging.getLogger('AuthUtil').setLevel(logging.WARNING)
+logging.getLogger('OAuthUtil').setLevel(logging.WARNING)
 
 
 logger = logging.getLogger(__name__)
 
-def create_lab_corpus(lab_name:str, username_prefix=True) -> int:
+def create_lab_corpus(lab_name:str, username_prefix=True, quiet=False) -> int:
+
     if not lab_name:
         raise TypeError("You must supply a lab name")
     elif len(lab_name) < 10:
         raise TypeError("Please use a descriptive name of at least 10 characters")
-    
+
+    if quiet:
+        logging.getLogger('HomeConfigLoader').setLevel(logging.WARNING)
+        logging.getLogger('RequestUtil').setLevel(logging.WARNING)
+
     username = os.getlogin()
     # Use maximum 10 characters from username
     user_part = username.split("@")[0][:10]
@@ -45,6 +50,11 @@ def create_lab_corpus(lab_name:str, username_prefix=True) -> int:
     logger.info(f"New lab created with id [{corpus_id}]")
     return corpus_id
 
-def render_response(query, response):
-    rendered = render_markdown(query, response)
+def render_response(query, response, show_search_results=True):
+    rendered = render_markdown(query, response, show_search_results=show_search_results)
     display(Markdown(rendered))
+
+def render_chat(query, response, show_search_results=False):
+    rendered = render_markdown(query, response, show_search_results=show_search_results, heading_level=3)
+    display(Markdown(rendered))
+    
